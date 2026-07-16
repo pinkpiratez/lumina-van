@@ -1,311 +1,186 @@
 <!DOCTYPE html>
-<html class="dark" lang="th">
+<html lang="th">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Lumina - Luxury Van Rental</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="./css/styles.css"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "tertiary-container": "#171a1f",
-                        "on-tertiary": "#2e3135",
-                        "tertiary-fixed-dim": "#c4c6cc",
-                        "surface": "#131314",
-                        "on-primary-fixed": "#191c22",
-                        "on-tertiary-fixed": "#191c20",
-                        "primary-fixed-dim": "#c4c6ce",
-                        "surface-variant": "#353435",
-                        "on-primary": "#2d3037",
-                        "on-secondary-fixed": "#1a1c1c",
-                        "on-secondary-fixed-variant": "#454747",
-                        "surface-bright": "#3a3939",
-                        "surface-tint": "#c4c6ce",
-                        "error-container": "#93000a",
-                        "error": "#ffb4ab",
-                        "on-surface-variant": "#c6c6cb",
-                        "on-primary-container": "#80828a",
-                        "inverse-surface": "#e5e2e2",
-                        "on-tertiary-fixed-variant": "#44474c",
-                        "secondary-fixed": "#e2e2e2",
-                        "on-secondary": "#2f3131",
-                        "surface-dim": "#131314",
-                        "inverse-primary": "#5c5e65",
-                        "on-secondary-container": "#b4b5b5",
-                        "inverse-on-surface": "#313031",
-                        "on-error-container": "#ffdad6",
-                        "on-primary-fixed-variant": "#44474e",
-                        "secondary-fixed-dim": "#c6c6c7",
-                        "tertiary-fixed": "#e1e2e9",
-                        "surface-container-lowest": "#0e0e0f",
-                        "primary-container": "#171a20",
-                        "primary-fixed": "#e1e2eb",
-                        "secondary-container": "#454747",
-                        "surface-container": "#201f20",
-                        "on-error": "#690005",
-                        "on-tertiary-container": "#808388",
-                        "primary": "#c4c6ce",
-                        "outline": "#909095",
-                        "secondary": "#c6c6c7",
-                        "surface-container-high": "#2a2a2a",
-                        "outline-variant": "#45474b",
-                        "surface-container-highest": "#353435",
-                        "surface-container-low": "#1c1b1c",
-                        "on-surface": "#e5e2e2",
-                        "on-background": "#e5e2e2",
-                        "background": "#131314",
-                        "tertiary": "#c4c6cc"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "spacing": {
-                        "gutter": "24px",
-                        "section-gap": "120px",
-                        "margin-desktop": "80px",
-                        "margin-mobile": "24px",
-                        "container-max": "1440px"
-                    },
-                    "fontFamily": {
-                        "body-md": ["Hanken Grotesk"],
-                        "display-xl": ["Hanken Grotesk"],
-                        "label-sm": ["Geist"],
-                        "headline-lg": ["Hanken Grotesk"],
-                        "display-xl-mobile": ["Hanken Grotesk"],
-                        "body-lg": ["Hanken Grotesk"],
-                        "headline-md": ["Hanken Grotesk"]
-                    },
-                    "fontSize": {
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "display-xl": ["64px", { "lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
-                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-                        "display-xl-mobile": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
-                    }
-                }
-            }
-        }
-    </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Lumina — รถตู้เชิงพาณิชย์ รับส่งพนักงานโรงงาน และท่องเที่ยวกลุ่ม พรีเมียม" />
+  <title>Lumina — Explore Beyond Limits</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css" />
 </head>
-<body class="bg-background text-on-surface font-body-md m-0 p-0 overflow-x-hidden">
-<!-- TopNavBar -->
-<nav class="fixed top-0 w-full bg-transparent backdrop-blur-xl z-50 transition-all duration-300" id="navbar">
-<div class="flex justify-between items-center w-full px-margin-desktop py-6 md:px-margin-desktop px-margin-mobile">
-<a class="font-headline-md text-headline-md font-bold tracking-tighter text-on-surface" href="#">
-                LUMINA
-            </a>
-<div class="hidden md:flex gap-8 items-center font-body-md text-body-md tracking-widest uppercase">
-<a class="text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-300" href="#models">Models</a>
-<a class="text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-300" href="#fleet-3d">Fleet</a>
-<a class="text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-300" href="#experience">Experience</a>
-<a class="text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-300" href="#shop">Shop</a>
-</div>
-<div class="flex items-center gap-6">
-<a class="hidden md:block font-body-md text-body-md tracking-widest uppercase text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-300" href="#fleet-3d">
-                    Book Now
-                </a>
-<a class="text-on-surface opacity-80 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center" href="#">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">account_circle</span>
-</a>
-<button class="md:hidden text-on-surface" type="button" aria-label="เมนู">
-<span class="material-symbols-outlined">menu</span>
-</button>
-</div>
-</div>
-</nav>
+<body>
+  <header class="site-header" id="site-header">
+    <a class="logo" href="#">Lumina</a>
+    <nav class="nav" aria-label="หลัก">
+      <a href="#about">About Us</a>
+      <a href="#services">Services</a>
+      <a href="#corporate">Corporate</a>
+      <a href="#leisure">Leisure</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="btn-cta" href="#contact">Book a Trip <span aria-hidden="true">↗</span></a>
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-label="เปิดเมนู" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </header>
 
-<!-- Hero Section -->
-<section class="snap-section h-screen w-full relative flex flex-col justify-between items-center overflow-hidden">
-<div class="absolute inset-0 z-0">
-<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBRYtkARF7wu6dIWpSWLLAZOHT3x2mv45vPlVfC8KUnU3Q_1G14PiTduyzUeyq_v6V73RmA_-OIGbQWIn5V_FVIRKI_nHai-TVgahnj6KOIndEOjCTQa_oawshEzQZPlpP8LONrWMpAVBlqodJ5NDl0eKREDVpH-TptGi3aqZ0sDYVa0MqFl3AANood0UYUz2NX3amwXVo4u9wBbcmFAFvmlo8dCnKp8Iq2O32n8aPr9jmCQNLS0VeS0Z3UGdqSwZvjzOgYxA-7aw')"></div>
-<div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80"></div>
-</div>
-<div class="z-10 text-center mt-32 md:mt-40 px-6">
-<p class="font-label-sm text-label-sm tracking-[0.2em] uppercase text-on-surface/70 mb-3">LUMINA</p>
-<h1 class="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-on-surface mb-2">Lumina X</h1>
-<p class="font-body-lg text-body-lg text-on-surface opacity-90">Experience the Future of Travel</p>
-</div>
-<div class="z-10 flex flex-col md:flex-row gap-6 mb-24 md:mb-32 px-6 w-full max-w-2xl mx-auto">
-<a class="flex-1 bg-on-surface text-background font-label-sm text-label-sm uppercase py-4 px-8 rounded flex items-center justify-center hover:bg-surface-tint transition-colors duration-300 text-center" href="#models">
-                Custom Order
-            </a>
-<a class="flex-1 bg-surface-variant/80 backdrop-blur-md text-on-surface font-label-sm text-label-sm uppercase py-4 px-8 rounded flex items-center justify-center hover:bg-surface-variant transition-colors duration-300 text-center border border-transparent hover:border-outline-variant" href="#fleet-3d">
-                Live Fleet Map
-            </a>
-</div>
-</section>
+  <nav class="nav-mobile" id="nav-mobile" hidden>
+    <a href="#about">About Us</a>
+    <a href="#services">Services</a>
+    <a href="#corporate">Corporate</a>
+    <a href="#leisure">Leisure</a>
+    <a href="#contact">Contact</a>
+    <a class="btn-cta" href="#contact">Book a Trip ↗</a>
+  </nav>
 
-<!-- Interior Section -->
-<section class="snap-section h-screen w-full relative flex flex-col justify-center items-center overflow-hidden" id="experience">
-<div class="absolute inset-0 z-0">
-<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCTYhJlBmoKd3M5gDvkbydIXn_nnbUjVH0fLZG3lUMfOJIiBUX2i4b5-30AkCIVWHFK5YJ5x5fMmCkqzJflP_R3DqkDD7XKvXLQARjPhfhwGYbVJMNBdjYq0merCO2rdZ-ZGj0swDvPLKqUxFeJd-8KTJX6pu4x7d9_CuB9Q9XjrzADmiHPiVKxIJmc3HzdMNnpNTGaa9_LcU3W0ZTwdfJUS-YZh9Etui0_EAOALHudTFiK1L-aS1qewc8rvH6cRPuvZ8YNlw3koA')"></div>
-<div class="absolute inset-0 bg-black/30"></div>
-</div>
-<div class="z-10 text-center w-full px-6 absolute top-32">
-<h2 class="font-headline-lg text-headline-lg text-on-surface drop-shadow-lg">Luxury in Every Detail</h2>
-<p class="font-body-md text-body-md text-on-surface opacity-80 mt-2">ความหรูหราในทุกรายละเอียด</p>
-</div>
-</section>
-
-<!-- 3D Isometric Fleet Section (embedded in scroll) -->
-<section class="snap-section iso-section h-screen w-full relative overflow-hidden" id="fleet-3d" aria-label="แผนที่ฝูงบินรถตู้แบบ isometric">
-  <canvas id="iso-canvas" class="iso-canvas" aria-label="ฉาก 3D สี่แยกโรงงาน รถตู้วิ่งรับส่ง"></canvas>
-
-  <div class="iso-overlay">
-    <div class="iso-copy">
-      <p class="iso-eyebrow">LIVE FLEET</p>
-      <h2 class="iso-title">สี่แยกโรงงาน · กะเช้า</h2>
-      <p class="iso-sub">คลิกที่รถตู้ที่กำลังวิ่งเพื่อดูเส้นทางกะงานและที่นั่งว่าง</p>
+  <!-- Hero: one composition — brand, headline, line, CTA, full-bleed image -->
+  <section class="hero" id="top">
+    <div class="hero-media" data-parallax="0.35">
+      <img
+        src="./images/hero-forest.jpg"
+        alt="รถตู้พรีเมียมจอดในป่ามืดยามเย็น แสงอุ่นจากภายในห้องโดยสาร"
+        class="hero-img"
+        width="1920"
+        height="1080"
+      />
+      <div class="hero-veil"></div>
     </div>
 
-    <aside class="glass-card" id="van-card" hidden aria-live="polite">
-      <button type="button" class="glass-close" id="card-close" aria-label="ปิด">×</button>
-      <div class="glass-header">
-        <span class="glass-badge" id="card-status">กำลังวิ่ง</span>
-        <h3 class="glass-title" id="card-route">สาย A — นิคมบางปะอิน</h3>
+    <div class="hero-content">
+      <p class="hero-brand">Lumina</p>
+      <h1 class="hero-title">
+        <span class="accent">Explore</span>
+        <span class="rest">Beyond Limits</span>
+      </h1>
+      <p class="hero-lead">
+        Adventure begins beyond comfort. Premium van transport for factories,
+        groups &amp; tailored routes — reliable, refined, ready.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-cta btn-cta--solid" href="#services">Let’s Explore <span aria-hidden="true">↗</span></a>
       </div>
-      <dl class="glass-meta">
-        <div>
-          <dt>กะงาน</dt>
-          <dd id="card-shift">เช้า 05:30 – 06:15</dd>
+    </div>
+
+    <p class="hero-tag">Reliable. Wilderness. Fleet.</p>
+  </section>
+
+  <!-- About strip -->
+  <section class="about" id="about">
+    <div class="about-inner">
+      <p class="eyebrow">Who we are</p>
+      <h2 class="section-title">Commercial vans with an editorial soul</h2>
+      <p class="about-text">
+        Lumina connects industrial schedules and leisure journeys with the same
+        standard of care — quiet cabins, vetted drivers, and routes that arrive
+        on time.
+      </p>
+    </div>
+  </section>
+
+  <!-- Dual services -->
+  <section class="services" id="services">
+    <div class="services-head">
+      <p class="eyebrow">Two ways to travel</p>
+      <h2 class="section-title">Built for work. Tuned for escape.</h2>
+    </div>
+
+    <div class="service-grid">
+      <!-- B2B Corporate -->
+      <article class="service-card" id="corporate">
+        <div class="service-visual" data-parallax="0.12">
+          <div class="service-visual-fill service-visual-fill--corp"></div>
         </div>
-        <div>
-          <dt>คนขับ</dt>
-          <dd id="card-driver">สมชาย พิทักษ์</dd>
+        <div class="service-body">
+          <p class="service-label">Corporate · B2B</p>
+          <h3 class="service-title">Factory Worker Transport</h3>
+          <p class="service-desc">
+            Shift-ready fleets for industrial estates — punctual pickups, safety
+            protocols, and paperwork your HR team can trust.
+          </p>
+          <ul class="service-points">
+            <li>Dedicated shift routes &amp; live seat status</li>
+            <li>Licensed drivers · GPS tracking</li>
+            <li>Monthly contracts &amp; SLA reports</li>
+          </ul>
+          <div class="service-actions">
+            <a class="link-arrow" href="#contact">Request a quote <span>↗</span></a>
+            <a class="link-ghost" href="#contact">Get corporate deck</a>
+          </div>
         </div>
-        <div>
-          <dt>ที่นั่งว่าง</dt>
-          <dd id="card-seats">6 / 14</dd>
+      </article>
+
+      <!-- B2C Leisure -->
+      <article class="service-card service-card--invert" id="leisure">
+        <div class="service-visual" data-parallax="0.12">
+          <div class="service-visual-fill service-visual-fill--leisure"></div>
         </div>
-        <div>
-          <dt>ทะเบียน</dt>
-          <dd id="card-plate">กข 4521</dd>
+        <div class="service-body">
+          <p class="service-label">Leisure · B2C</p>
+          <h3 class="service-title">Group Travel &amp; Seminars</h3>
+          <p class="service-desc">
+            Curated routes for retreats, team offsites, and tourist circuits —
+            comfortable seating, flexible itineraries, memorable arrivals.
+          </p>
+          <ul class="service-points">
+            <li>Private charters &amp; multi-day tours</li>
+            <li>Seminar &amp; event transfers</li>
+            <li>Tailored scenic &amp; city routes</li>
+          </ul>
+          <div class="service-actions">
+            <a class="link-arrow" href="#contact">Plan a journey <span>↗</span></a>
+            <a class="link-ghost" href="#contact">Talk to a host</a>
+          </div>
         </div>
-      </dl>
-      <button type="button" class="btn btn-primary btn-block" id="btn-book">จองที่นั่งในสายนี้</button>
-    </aside>
-  </div>
+      </article>
+    </div>
+  </section>
 
-  <p class="iso-hint">คลิกที่รถตู้ · เลื่อนหน้าต่อได้ตามปกติ</p>
-  <div class="iso-loader" id="loader"><div class="loader-bar"></div><span>กำลังโหลดฉาก 3D…</span></div>
-</section>
+  <!-- Atmosphere band -->
+  <section class="band" data-parallax-bg="0.25">
+    <div class="band-inner">
+      <h2 class="band-title">Travel that feels intentional</h2>
+      <p class="band-text">From dawn factory gates to dusk forest roads — one fleet, two missions.</p>
+    </div>
+  </section>
 
-<!-- Models Grid Section -->
-<section class="snap-section min-h-screen w-full bg-surface py-section-gap px-margin-mobile md:px-margin-desktop flex flex-col items-center justify-center" id="models">
-<div class="w-full max-w-container-max mx-auto">
-<h2 class="font-headline-lg text-headline-lg text-center mb-16">Select Your Class</h2>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-<div class="group flex flex-col bg-surface-container rounded-lg overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
-<div class="h-64 w-full bg-surface-container-high overflow-hidden">
-<img alt="Executive Model" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-sZeS82r1kDPUXM5LrZkx6_DY-acU6WAk-q_0cdfONCQaaev79rO4UcVWNRozfXXrbGxfyVB6A5z1oLEHL1KLGaNNMpftD-wT3l47moaWNtyYlrZHeJRyIs9ePBjvFFFiy4hO3IAhaZ_1PEP89edh9OZbz4NlWWroxCqE1s8jhjlZQTfGIAYyBWjS70R3ojkm2ir4L1qbvJKuV_wJTlQ-jXQTJOjCSx5A0oOcJ0mEijyiy-9SvdE9kLPeySHEF-L7m1RNYJsviA"/>
-</div>
-<div class="p-8 flex flex-col flex-grow">
-<h3 class="font-headline-md text-headline-md mb-2">Executive</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mb-8 flex-grow">Professional transport with boardroom capabilities.</p>
-<div class="flex justify-between items-end border-t border-surface-variant pt-4 mt-auto">
-<div>
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase block">Starting at</span>
-<span class="font-body-lg text-body-lg">฿15,000 / day</span>
-</div>
-<a class="font-label-sm text-label-sm uppercase text-on-surface hover:text-primary transition-colors" href="#">Explore</a>
-</div>
-</div>
-</div>
-<div class="group flex flex-col bg-surface-container rounded-lg overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
-<div class="h-64 w-full bg-surface-container-high overflow-hidden">
-<img alt="Family Model" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARMDhBW2LlNLHlzJH-QSw0DZkACLcwk5QYi-3qVrZeRf_kqYFAHld-8u1XFICamDp9M7EMWpWpbAs26Pa58pPL--SBSthx2w5ngjY9aONcX7G1lf1i_kfTvoTOOefx8bNV28_JsTUagaz7kEazGVvn5gadNs9m61nkQyV35a-8U3jrNADlFBcUD52BBnNSB4lqPY2Zhs0ardZDPkXi3K3dNWu-YPD9GGfKzngeAH-bTTECSbusPJ3w8YZz-KloSTpwlmeCHci8Pw"/>
-</div>
-<div class="p-8 flex flex-col flex-grow">
-<h3 class="font-headline-md text-headline-md mb-2">Family</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mb-8 flex-grow">Spacious comfort for long journeys with loved ones.</p>
-<div class="flex justify-between items-end border-t border-surface-variant pt-4 mt-auto">
-<div>
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase block">Starting at</span>
-<span class="font-body-lg text-body-lg">฿12,000 / day</span>
-</div>
-<a class="font-label-sm text-label-sm uppercase text-on-surface hover:text-primary transition-colors" href="#">Explore</a>
-</div>
-</div>
-</div>
-<div class="group flex flex-col bg-surface-container rounded-lg overflow-hidden transition-transform duration-300 hover:scale-[1.02]" id="shop">
-<div class="h-64 w-full bg-surface-container-high overflow-hidden">
-<img alt="VIP Lounge Model" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB31teBmyFInCZ7UExEh3qYOLAo7TrVQ_YWUSOtPX9HB1r3inKrhQxA-qrMA_lXWKRCkxK3BHovjR1VUWd-T8cm2Yyftl47QR6EnzCh4p45CovvP5bn4o6Br5KJMRt9cPsp7_vE8nSrGx9PQNN09b_l9slANTADFoF927FxYDWiG0GIw5HSF6p-H7aKLF0GwTKjNzE31qKo7HNuFfJvHrNABSSnWwLR5fOapojWsZ6tz4f1nw1WKY2dLBReLyxjVaR0qKM48AEyYw"/>
-</div>
-<div class="p-8 flex flex-col flex-grow">
-<h3 class="font-headline-md text-headline-md mb-2">VIP Lounge</h3>
-<p class="font-body-md text-body-md text-on-surface-variant mb-8 flex-grow">Ultimate indulgence with reclining seats and entertainment.</p>
-<div class="flex justify-between items-end border-t border-surface-variant pt-4 mt-auto">
-<div>
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase block">Starting at</span>
-<span class="font-body-lg text-body-lg">฿25,000 / day</span>
-</div>
-<a class="font-label-sm text-label-sm uppercase text-on-surface hover:text-primary transition-colors" href="#">Explore</a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
+  <!-- Contact -->
+  <section class="contact" id="contact">
+    <div class="contact-inner">
+      <p class="eyebrow">Get in touch</p>
+      <h2 class="section-title">Book a trip or get a quote</h2>
+      <form class="contact-form" action="#" method="post" onsubmit="return false;">
+        <label>
+          <span>Name</span>
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+        <label>
+          <span>Service</span>
+          <select name="service">
+            <option value="corporate">Factory / Corporate transport</option>
+            <option value="leisure">Group travel / Leisure</option>
+            <option value="other">Other inquiry</option>
+          </select>
+        </label>
+        <label class="full">
+          <span>Message</span>
+          <textarea name="message" rows="4" placeholder="Shift times, headcount, or destination…"></textarea>
+        </label>
+        <button class="btn-cta btn-cta--solid" type="submit">Send inquiry <span aria-hidden="true">↗</span></button>
+      </form>
+    </div>
+  </section>
 
-<!-- Scenic Drive Section -->
-<section class="snap-section h-screen w-full relative flex flex-col justify-end items-center overflow-hidden">
-<div class="absolute inset-0 z-0">
-<div class="w-full h-full bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBXzOsUalsMRDLsLVuzO8AQyhhOX3N4x4CQ0pGdsLleJMyHhu4MALgrNfWPccmynkIsUMvm4BSBzN62_-0-3_uLjwaVAfF9v-Q2gkN0iSAWvtn2J1ElXkKZlTIq0lODIJXd7S7Wl8Tee-8SSO0wD1bHm3Q7ApR6YRgCEfZQzgi0f-hHL4WeRHDvUnM2Y8aXZqMqkWoztgN6ancxkku7LoTuwZQqiLxJEvs4R9g4DeeUgEmZuScbblpp7fJXNO7MzJiMFiH4Tn-f_w')"></div>
-<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-</div>
-<div class="z-10 text-center w-full px-6 mb-32">
-<h2 class="font-display-xl-mobile md:font-display-xl text-display-xl-mobile md:text-display-xl text-on-surface drop-shadow-xl mb-4">Travel Beyond Limits</h2>
-<p class="font-body-lg text-body-lg text-on-surface opacity-90">เดินทางอย่างไร้ขีดจำกัด</p>
-</div>
-</section>
+  <footer class="site-footer">
+    <a class="logo" href="#">Lumina</a>
+    <p>© 2026 Lumina Fleet. Premium commercial van &amp; travel.</p>
+  </footer>
 
-<footer class="snap-section bg-surface text-on-surface-variant font-label-sm text-label-sm w-full py-10 px-margin-mobile md:px-margin-desktop border-t border-surface-variant/30">
-<div class="flex flex-col md:flex-row justify-center items-center gap-6 w-full max-w-container-max mx-auto">
-<span class="mr-auto hidden md:block">Lumina © 2026</span>
-<div class="flex flex-wrap justify-center gap-6">
-<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Privacy &amp; Legal</a>
-<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Contact</a>
-<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Careers</a>
-<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">News</a>
-<a class="text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Locations</a>
-</div>
-<span class="md:hidden mt-4">Lumina © 2026</span>
-</div>
-</footer>
-
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-  }
-}
-</script>
-<script type="module" src="./js/main.js"></script>
-<script>
-  window.addEventListener('scroll', () => {
-    const nav = document.getElementById('navbar');
-    if (window.scrollY > 50) {
-      nav.classList.add('bg-surface/80');
-      nav.classList.remove('bg-transparent');
-    } else {
-      nav.classList.add('bg-transparent');
-      nav.classList.remove('bg-surface/80');
-    }
-  });
-</script>
+  <script type="module" src="./js/parallax.js"></script>
 </body>
 </html>
