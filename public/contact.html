@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="ติดต่อ Lumina — ฟอร์ม แผนที่ เบอร์โทร Line และ WhatsApp" />
+  <title>Lumina — Contact Us</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body data-page="contact">
+  <header class="site-header site-header--solid" id="site-header">
+    <a class="logo" href="./index.html">Lumina</a>
+    <nav class="nav" aria-label="หลัก">
+      <a href="./corporate.html">Corporate</a>
+      <a href="./travel.html">Travel</a>
+      <a href="./fleet.html">Fleet</a>
+      <a href="./contact.html" aria-current="page">Contact</a>
+    </nav>
+    <a class="btn" href="tel:+6620000000">Call</a>
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-label="เมนู" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </header>
+  <nav class="nav-mobile" id="nav-mobile" hidden>
+    <a href="./corporate.html">Corporate</a>
+    <a href="./travel.html">Travel</a>
+    <a href="./fleet.html">Fleet</a>
+    <a href="./contact.html" aria-current="page">Contact</a>
+    <a class="btn" href="tel:+6620000000">Call</a>
+  </nav>
+
+  <main>
+    <section class="page-hero reveal reveal--hero is-visible">
+      <p class="label reveal-child" style="--d:0">Contact Us</p>
+      <h1 class="reveal-child" style="--d:1">We’re here</h1>
+      <p class="page-lead reveal-child" style="--d:2">
+        ฟอร์มติดต่อ แผนที่ออฟฟิศ เบอร์ด่วน และแชท Line / WhatsApp
+      </p>
+    </section>
+
+    <section class="contact-layout reveal">
+      <div class="contact-aside reveal-child" style="--d:0">
+        <h2>Quick links</h2>
+        <a class="chat-btn" href="tel:+6620000000">โทรด่วน · 02-000-0000</a>
+        <a class="chat-btn" href="https://line.me/R/ti/p/@lumina" target="_blank" rel="noopener">Line · @lumina</a>
+        <a class="chat-btn" href="https://wa.me/66800000000" target="_blank" rel="noopener">WhatsApp</a>
+        <div class="office-block">
+          <h3>Office</h3>
+          <p>
+            88 Lumina Road, Bangrak<br />
+            Bangkok 10500, Thailand
+          </p>
+          <p class="muted">จ–ศ 08:30–17:30</p>
+        </div>
+      </div>
+
+      <form class="contact-form contact-form--wide reveal-child" style="--d:1" action="#" method="post">
+        <label>
+          <span>Name</span>
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+        <label>
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+        <label class="full">
+          <span>Topic</span>
+          <select name="topic">
+            <option value="corporate">Corporate transport</option>
+            <option value="travel">Travel &amp; leisure</option>
+            <option value="fleet">Fleet inquiry</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+        <label class="full">
+          <span>Message</span>
+          <textarea name="message" rows="4" placeholder="รายละเอียดที่ต้องการ…" required></textarea>
+        </label>
+        <button class="btn" type="submit">Send message</button>
+      </form>
+    </section>
+
+    <section class="map-block reveal">
+      <h2 class="reveal-child" style="--d:0">แผนที่ออฟฟิศ</h2>
+      <div class="map-frame reveal-child" style="--d:1">
+        <iframe
+          title="Lumina office map"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.openstreetmap.org/export/embed.html?bbox=100.510%2C13.720%2C100.530%2C13.735&amp;layer=mapnik&amp;marker=13.7275%2C100.5200"
+        ></iframe>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="logo" href="./index.html">Lumina</a>
+    <nav class="footer-nav">
+      <a href="./corporate.html">Corporate</a>
+      <a href="./travel.html">Travel</a>
+      <a href="./fleet.html">Fleet</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+    <span>© 2026</span>
+  </footer>
+  <script type="module" src="./js/parallax.js"></script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Lumina Fleet — Standard Commuter และ VIP van เจาะลึกฟังก์ชันภายใน" />
+  <title>Lumina — Our Fleet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body data-page="fleet">
+  <header class="site-header site-header--solid" id="site-header">
+    <a class="logo" href="./index.html">Lumina</a>
+    <nav class="nav" aria-label="หลัก">
+      <a href="./corporate.html">Corporate</a>
+      <a href="./travel.html">Travel</a>
+      <a href="./fleet.html" aria-current="page">Fleet</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+    <a class="btn" href="./contact.html">Order Now</a>
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-label="เมนู" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </header>
+  <nav class="nav-mobile" id="nav-mobile" hidden>
+    <a href="./corporate.html">Corporate</a>
+    <a href="./travel.html">Travel</a>
+    <a href="./fleet.html" aria-current="page">Fleet</a>
+    <a href="./contact.html">Contact</a>
+    <a class="btn" href="./contact.html">Order Now</a>
+  </nav>
+
+  <main>
+    <section class="page-hero reveal reveal--hero is-visible">
+      <p class="label reveal-child" style="--d:0">Our Fleet</p>
+      <h1 class="reveal-child" style="--d:1">Showroom</h1>
+      <p class="page-lead reveal-child" style="--d:2">
+        เลือกรุ่นที่เหมาะกับงาน — Standard Commuter สำหรับกะงาน หรือ VIP สำหรับทริปและผู้บริหาร
+      </p>
+    </section>
+
+    <section class="fleet-block reveal" id="standard">
+      <div class="fleet-media reveal-child" style="--d:0">
+        <img src="./images/fleet-standard.jpg" alt="Standard Commuter van" width="1600" height="1067" />
+      </div>
+      <div class="fleet-copy">
+        <p class="label reveal-child" style="--d:1">Standard Commuter</p>
+        <h2 class="reveal-child" style="--d:2">Built for shifts</h2>
+        <p class="reveal-child" style="--d:3">
+          ห้องโดยสารเรียบ แข็งแรง ที่นั่ง 12–14 ที่ เหมาะรับส่งพนักงานทุกวัน
+        </p>
+        <ul class="spec-list reveal-child" style="--d:4">
+          <li><span>Seats</span><strong>12–14</strong></li>
+          <li><span>AC</span><strong>Dual zone</strong></li>
+          <li><span>USB</span><strong>ทุกแถว</strong></li>
+          <li><span>Safety</span><strong>กล้องถอย · ABS</strong></li>
+          <li><span>Best for</span><strong>โรงงาน / นิคม</strong></li>
+        </ul>
+        <a class="btn reveal-child" style="--d:5" href="./corporate.html">Corporate details</a>
+      </div>
+    </section>
+
+    <section class="fleet-block fleet-block--flip reveal" id="vip">
+      <div class="fleet-media reveal-child" style="--d:0">
+        <img src="./images/fleet-vip.jpg" alt="VIP van interior style" width="1600" height="1067" />
+      </div>
+      <div class="fleet-copy">
+        <p class="label reveal-child" style="--d:1">VIP</p>
+        <h2 class="reveal-child" style="--d:2">Quiet cabin comfort</h2>
+        <p class="reveal-child" style="--d:3">
+          ที่นั่งกว้าง กันเสียงดีขึ้น จอสั้น / ไฟอ่านหนังสือ — เหมาะทริปยาวและแขกวีไอพี
+        </p>
+        <ul class="spec-list reveal-child" style="--d:4">
+          <li><span>Seats</span><strong>8–10 captain</strong></li>
+          <li><span>Cabin</span><strong>Leather · privacy glass</strong></li>
+          <li><span>Media</span><strong>Screen · Bluetooth</strong></li>
+          <li><span>Power</span><strong>USB-C · 220V</strong></li>
+          <li><span>Best for</span><strong>ทัวร์ / สัมมนา / ผู้บริหาร</strong></li>
+        </ul>
+        <a class="btn reveal-child" style="--d:5" href="./travel.html">Travel packages</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="logo" href="./index.html">Lumina</a>
+    <nav class="footer-nav">
+      <a href="./corporate.html">Corporate</a>
+      <a href="./travel.html">Travel</a>
+      <a href="./fleet.html">Fleet</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+    <span>© 2026</span>
+  </footer>
+  <script type="module" src="./js/parallax.js"></script>
+</body>
+</html>

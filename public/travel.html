@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Lumina Travel — แพ็กเกจท่องเที่ยว สัมมนา และฟอร์มจองทริป" />
+  <title>Lumina — Travel &amp; Leisure</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body data-page="travel">
+  <header class="site-header site-header--solid" id="site-header">
+    <a class="logo" href="./index.html">Lumina</a>
+    <nav class="nav" aria-label="หลัก">
+      <a href="./corporate.html">Corporate</a>
+      <a href="./travel.html" aria-current="page">Travel</a>
+      <a href="./fleet.html">Fleet</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+    <a class="btn" href="#book">Book a Trip</a>
+    <button class="nav-toggle" type="button" id="nav-toggle" aria-label="เมนู" aria-expanded="false">
+      <span></span><span></span>
+    </button>
+  </header>
+  <nav class="nav-mobile" id="nav-mobile" hidden>
+    <a href="./corporate.html">Corporate</a>
+    <a href="./travel.html" aria-current="page">Travel</a>
+    <a href="./fleet.html">Fleet</a>
+    <a href="./contact.html">Contact</a>
+    <a class="btn" href="#book">Book a Trip</a>
+  </nav>
+
+  <main>
+    <section class="page-hero reveal reveal--hero is-visible">
+      <p class="label reveal-child" style="--d:0">Travel &amp; Leisure</p>
+      <h1 class="reveal-child" style="--d:1">Group travel &amp; seminars</h1>
+      <p class="page-lead reveal-child" style="--d:2">
+        แพ็กเกจเส้นทางแนะนำ ทริปองค์กร และรถตู้สำหรับสัมมนา — จองง่าย ปรับตารางได้
+      </p>
+    </section>
+
+    <section class="page-block reveal">
+      <h2 class="reveal-child" style="--d:0">แพ็กเกจเส้นทางแนะนำ</h2>
+      <div class="package-grid">
+        <article class="package reveal-child" style="--d:1">
+          <h3>Ayutthaya Day</h3>
+          <p>กรุงเทพ → อยุธยา · 1 วัน · 12–14 ที่นั่ง</p>
+          <ul>
+            <li>รับ–ส่งโรงแรม / ออฟฟิศ</li>
+            <li>คนขับรอระหว่างทริป</li>
+          </ul>
+        </article>
+        <article class="package reveal-child" style="--d:2">
+          <h3>Hua Hin Retreat</h3>
+          <p>กรุงเทพ → หัวหิน · 2 วัน · VIP cabin</p>
+          <ul>
+            <li>ที่นั่งกว้าง · ชาร์จ USB</li>
+            <li>เหมาะทีมสัมมนา / offsite</li>
+          </ul>
+        </article>
+        <article class="package reveal-child" style="--d:3">
+          <h3>Seminar Shuttle</h3>
+          <p>โรงแรม ↔ ศูนย์ประชุม · ตามตารางอีเวนต์</p>
+          <ul>
+            <li>หลายรอบต่อวัน</li>
+            <li>ป้ายต้อนรับ / ประสานงานหน้างาน</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="page-block reveal">
+      <h2 class="reveal-child" style="--d:0">ผลงานทริป</h2>
+      <div class="gallery">
+        <figure class="reveal-child" style="--d:1">
+          <img src="./images/trip-1.jpg" alt="ทริปท่องเที่ยวกลุ่ม" width="1200" height="800" loading="lazy" />
+        </figure>
+        <figure class="reveal-child" style="--d:2">
+          <img src="./images/trip-2.jpg" alt="ทิวทัศน์เส้นทางท่องเที่ยว" width="1200" height="800" loading="lazy" />
+        </figure>
+        <figure class="reveal-child" style="--d:3">
+          <img src="./images/trip-3.jpg" alt="บรรยากาศทริปกลางแจ้ง" width="1200" height="800" loading="lazy" />
+        </figure>
+        <figure class="reveal-child" style="--d:4">
+          <img src="./images/leisure.jpg" alt="การเดินทางแบบกลุ่ม" width="1200" height="800" loading="lazy" />
+        </figure>
+      </div>
+    </section>
+
+    <section class="page-block reveal" id="book">
+      <h2 class="reveal-child" style="--d:0">จองทริป</h2>
+      <p class="page-lead reveal-child" style="--d:1">บอกวันที่ จำนวนคน และปลายทาง — เราจะส่งใบเสนอราคา</p>
+      <form class="contact-form contact-form--wide reveal-child" style="--d:2" action="#" method="post">
+        <label>
+          <span>Name</span>
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+        <label>
+          <span>Phone</span>
+          <input type="tel" name="phone" autocomplete="tel" required />
+        </label>
+        <label>
+          <span>Package</span>
+          <select name="package">
+            <option value="ayutthaya">Ayutthaya Day</option>
+            <option value="hua-hin">Hua Hin Retreat</option>
+            <option value="seminar">Seminar Shuttle</option>
+            <option value="custom">Custom route</option>
+          </select>
+        </label>
+        <label>
+          <span>Travel date</span>
+          <input type="date" name="date" />
+        </label>
+        <label class="full">
+          <span>Details</span>
+          <textarea name="message" rows="3" placeholder="จำนวนคน จุดรับ สิ่งที่ต้องการเพิ่ม…"></textarea>
+        </label>
+        <button class="btn" type="submit">Submit booking</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="logo" href="./index.html">Lumina</a>
+    <nav class="footer-nav">
+      <a href="./corporate.html">Corporate</a>
+      <a href="./travel.html">Travel</a>
+      <a href="./fleet.html">Fleet</a>
+      <a href="./contact.html">Contact</a>
+    </nav>
+    <span>© 2026</span>
+  </footer>
+  <script type="module" src="./js/parallax.js"></script>
+</body>
+</html>

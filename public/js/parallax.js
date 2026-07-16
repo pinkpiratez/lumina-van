@@ -102,16 +102,18 @@ window.addEventListener("scroll", onScroll, { passive: true });
 window.addEventListener("resize", onScroll, { passive: true });
 onScroll();
 
-document.querySelector(".contact-form")?.addEventListener("submit", (e) => {
-  e.preventDefault();
-  const btn = e.target.querySelector("button[type='submit']");
-  if (!btn) return;
-  const prev = btn.textContent;
-  btn.textContent = "Submitted";
-  btn.disabled = true;
-  setTimeout(() => {
-    btn.textContent = prev;
-    btn.disabled = false;
-    e.target.reset();
-  }, 2200);
+document.querySelectorAll(".contact-form").forEach((form) => {
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const btn = form.querySelector("button[type='submit']");
+    if (!btn) return;
+    const prev = btn.textContent;
+    btn.textContent = "Submitted";
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = prev;
+      btn.disabled = false;
+      form.reset();
+    }, 2200);
+  });
 });
