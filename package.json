@@ -2,7 +2,7 @@
 	"name": "lumina-van",
 	"version": "1.0.0",
 	"private": true,
-	"description": "Lumina - Luxury Van Rental landing page on Cloudflare Workers",
+	"description": "Lumina Fleet — isometric 3D factory commuter van transport on Cloudflare Workers",
 	"scripts": {
 		"deploy": "wrangler deploy",
 		"dev": "wrangler dev"
