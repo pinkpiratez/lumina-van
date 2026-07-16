@@ -27,7 +27,8 @@ body {
   z-index: 0;
   cursor: grab;
   outline: none;
-  touch-action: none;
+  /* Allow vertical page scroll over the canvas; orbit still via drag */
+  touch-action: pan-y;
 }
 
 .iso-canvas:active {
