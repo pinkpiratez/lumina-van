@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="description" content="Lumina — premium commercial van transport for factories and group travel" />
   <title>Lumina</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -32,81 +32,82 @@
   </nav>
 
   <section class="hero">
-    <div class="hero-media" data-parallax="0.28">
+    <div class="hero-media" data-parallax="0.22">
       <img
         src="./images/hero.jpg"
         alt="รถตู้พรีเมียมบนเส้นทางธรรมชาติ"
         class="hero-img"
         width="2400"
         height="1600"
+        fetchpriority="high"
       />
       <div class="hero-veil"></div>
     </div>
-    <div class="hero-content">
-      <h1>Lumina</h1>
-      <p>Premium van transport for work and travel.</p>
-      <a class="btn btn--light" href="#services">View Fleet</a>
+    <div class="hero-content reveal reveal--hero is-visible">
+      <h1 class="reveal-child" style="--d:0">Lumina</h1>
+      <p class="reveal-child" style="--d:1">Premium van transport for work and travel.</p>
+      <a class="btn btn--light reveal-child" style="--d:2" href="#services">View Fleet</a>
     </div>
   </section>
 
-  <section class="intro" id="about">
-    <h2>One fleet. Two missions.</h2>
-    <p>
+  <section class="intro reveal" id="about">
+    <h2 class="reveal-child" style="--d:0">One fleet. Two missions.</h2>
+    <p class="reveal-child" style="--d:1">
       Reliable shift transport for factories, and refined group travel for
       seminars and tours — quiet cabins, vetted drivers, on-time arrivals.
     </p>
   </section>
 
   <section class="services" id="services">
-    <article class="panel" id="corporate">
-      <div class="panel-media" data-parallax="0.1">
-        <img src="./images/corporate.jpg" alt="รถตู้เชิงพาณิชย์สำหรับงานองค์กร" width="1600" height="1067" />
+    <article class="panel reveal" id="corporate">
+      <div class="panel-media reveal-child" style="--d:0">
+        <img src="./images/corporate.jpg" alt="รถตู้เชิงพาณิชย์สำหรับงานองค์กร" width="1600" height="1067" loading="lazy" />
       </div>
       <div class="panel-copy">
-        <p class="label">Corporate</p>
-        <h3>Factory transport</h3>
-        <p>
+        <p class="label reveal-child" style="--d:1">Corporate</p>
+        <h3 class="reveal-child" style="--d:2">Factory transport</h3>
+        <p class="reveal-child" style="--d:3">
           Shift-ready routes for industrial estates. Safety protocols,
           GPS tracking, and contracts built for HR and operations.
         </p>
-        <ul>
+        <ul class="reveal-child" style="--d:4">
           <li>Dedicated shift schedules</li>
           <li>Licensed drivers &amp; live tracking</li>
           <li>Monthly SLA reporting</li>
         </ul>
-        <a class="text-link" href="#contact">Request a quote</a>
+        <a class="text-link reveal-child" style="--d:5" href="#contact">Request a quote</a>
       </div>
     </article>
 
-    <article class="panel panel--flip" id="leisure">
-      <div class="panel-media" data-parallax="0.1">
-        <img src="./images/leisure.jpg" alt="เส้นทางท่องเที่ยวสำหรับกลุ่ม" width="1600" height="1067" />
+    <article class="panel panel--flip reveal" id="leisure">
+      <div class="panel-media reveal-child" style="--d:0">
+        <img src="./images/leisure.jpg" alt="เส้นทางท่องเที่ยวสำหรับกลุ่ม" width="1600" height="1067" loading="lazy" />
       </div>
       <div class="panel-copy">
-        <p class="label">Leisure</p>
-        <h3>Group travel</h3>
-        <p>
+        <p class="label reveal-child" style="--d:1">Leisure</p>
+        <h3 class="reveal-child" style="--d:2">Group travel</h3>
+        <p class="reveal-child" style="--d:3">
           Charters for retreats, seminars, and tailored tourist routes —
           comfortable seating and flexible itineraries.
         </p>
-        <ul>
+        <ul class="reveal-child" style="--d:4">
           <li>Private &amp; multi-day charters</li>
           <li>Event and seminar transfers</li>
           <li>Custom scenic routes</li>
         </ul>
-        <a class="text-link" href="#contact">Plan a trip</a>
+        <a class="text-link reveal-child" style="--d:5" href="#contact">Plan a trip</a>
       </div>
     </article>
   </section>
 
-  <section class="band" data-parallax-bg="0.22">
-    <h2>Designed to arrive.</h2>
+  <section class="band reveal" data-parallax-bg="0.18">
+    <h2 class="reveal-child" style="--d:0">Designed to arrive.</h2>
   </section>
 
-  <section class="contact" id="contact">
-    <h2>Order Now</h2>
-    <p class="contact-lead">Tell us your route, headcount, and schedule.</p>
-    <form class="contact-form" action="#" method="post">
+  <section class="contact reveal" id="contact">
+    <h2 class="reveal-child" style="--d:0">Order Now</h2>
+    <p class="contact-lead reveal-child" style="--d:1">Tell us your route, headcount, and schedule.</p>
+    <form class="contact-form reveal-child" style="--d:2" action="#" method="post">
       <label>
         <span>Name</span>
         <input type="text" name="name" autocomplete="name" required />
