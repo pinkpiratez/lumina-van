@@ -1,521 +1,541 @@
 /**
- * Lumina Fleet — Isometric Three.js scene
- * Orthographic isometric camera + factory drop-off + interactive van
+ * Lumina — Isometric 4-way intersection embedded in landing scroll
+ * OrthographicCamera + animated fleet vans on crossroads routes
  */
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 /* ═══════════════════════════════════════════════════════════
    ISOMETRIC CAMERA MATH
-   ─────────────────────────────────────────────────────────
-   True isometric (equal foreshortening on X/Y/Z):
-     • Azimuth (Y)  = 45°  = π/4
-     • Elevation (X)= arctan(1/√2) ≈ 35.264°
-
-   From a camera looking down -Z, we rotate:
-     1) pitch around X by ISO_ELEVATION
-     2) yaw around Y by ISO_AZIMUTH
-   Or equivalently place the eye at:
-     x = d · sin(azimuth) · cos(elevation)
-     y = d · sin(elevation)
-     z = d · cos(azimuth) · cos(elevation)
-   then lookAt(target). OrthographicCamera removes perspective
-   foreshortening so the view stays strictly isometric.
+   True isometric: azimuth 45°, elevation arctan(1/√2) ≈ 35.264°
+   OrthographicCamera removes perspective foreshortening.
    ═══════════════════════════════════════════════════════════ */
-const ISO_AZIMUTH = Math.PI / 4; // 45°
-const ISO_ELEVATION = Math.atan(1 / Math.SQRT2); // ≈ 35.264°
-const CAMERA_DISTANCE = 42;
-const FRUSTUM_SIZE = 28; // world units visible vertically at zoom=1
+const ISO_AZIMUTH = Math.PI / 4;
+const ISO_ELEVATION = Math.atan(1 / Math.SQRT2);
+const CAMERA_DISTANCE = 48;
+const FRUSTUM_SIZE = 32;
+const ROAD_HALF = 3.2;
+const ROAD_LEN = 28;
 
-/** Optional external van model. Leave empty to use procedural mesh. */
-const VAN_GLTF_URL = ""; // e.g. "./models/commuter-van.gltf"
-
-const VAN_DATA = {
-  route: "สาย A — นิคมบางปะอิน",
-  shift: "เช้า 05:30 – 06:15",
-  driver: "สมชาย พิทักษ์ · ป้ายเหลือง",
-  seats: "6 / 14",
-  plate: "กข 4521",
-  status: "พร้อมวิ่ง",
-};
+const FLEET = [
+  {
+    id: "a",
+    color: 0xe8a317,
+    speed: 0.085,
+    phase: 0,
+    route: "สาย A — นิคมบางปะอิน",
+    shift: "เช้า 05:30 – 06:15",
+    driver: "สมชาย พิทักษ์",
+    seats: "6 / 14",
+    plate: "กข 4521",
+    status: "กำลังวิ่ง",
+    // Eastbound along +X (lane south of centerline)
+    path: [
+      new THREE.Vector3(-ROAD_LEN, 0, -1.35),
+      new THREE.Vector3(ROAD_LEN, 0, -1.35),
+    ],
+  },
+  {
+    id: "b",
+    color: 0xc4c6ce,
+    speed: 0.07,
+    phase: 0.35,
+    route: "สาย B — อยุธยา โรงงาน 2",
+    shift: "เช้า 05:45 – 06:30",
+    driver: "วิไล ใจดี",
+    seats: "3 / 14",
+    plate: "ขน 8890",
+    status: "กำลังวิ่ง",
+    // Westbound along -X
+    path: [
+      new THREE.Vector3(ROAD_LEN, 0, 1.35),
+      new THREE.Vector3(-ROAD_LEN, 0, 1.35),
+    ],
+  },
+  {
+    id: "c",
+    color: 0x6ecf9b,
+    speed: 0.078,
+    phase: 0.62,
+    route: "สาย C — คลองหลวง",
+    shift: "บ่าย 13:00 – 13:45",
+    driver: "อนุชา ศรีสุข",
+    seats: "9 / 14",
+    plate: "บก 2204",
+    status: "กำลังวิ่ง",
+    // Northbound along +Z
+    path: [
+      new THREE.Vector3(1.35, 0, -ROAD_LEN),
+      new THREE.Vector3(1.35, 0, ROAD_LEN),
+    ],
+  },
+  {
+    id: "d",
+    color: 0x7a92b8,
+    speed: 0.09,
+    phase: 0.18,
+    route: "สาย D — วังน้อย Express",
+    shift: "ดึก 21:30 – 22:15",
+    driver: "มานพ รุ่งเรือง",
+    seats: "1 / 12",
+    plate: "กท 6712",
+    status: "ใกล้เต็ม",
+    // Southbound along -Z
+    path: [
+      new THREE.Vector3(-1.35, 0, ROAD_LEN),
+      new THREE.Vector3(-1.35, 0, -ROAD_LEN),
+    ],
+  },
+];
 
 /* ── DOM ── */
+const section = document.getElementById("fleet-3d");
 const canvas = document.getElementById("iso-canvas");
 const loaderEl = document.getElementById("loader");
 const vanCard = document.getElementById("van-card");
 const cardClose = document.getElementById("card-close");
-const btnFocusVan = document.getElementById("btn-focus-van");
 const btnBook = document.getElementById("btn-book");
 
-/* ── Renderer ── */
-const renderer = new THREE.WebGLRenderer({
-  canvas,
-  antialias: true,
-  alpha: false,
-  powerPreference: "high-performance",
-});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x1a2834);
-scene.fog = new THREE.Fog(0x1a2834, 55, 110);
-
-/* ── Orthographic isometric camera ── */
-const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 200);
-updateOrthoFrustum();
-placeIsometricCamera(camera, new THREE.Vector3(0, 1.2, 0), CAMERA_DISTANCE);
-camera.up.set(0, 1, 0);
-
-/**
- * Place camera at classic isometric angles relative to a look-at target.
- */
-function placeIsometricCamera(cam, target, distance) {
-  const x = distance * Math.sin(ISO_AZIMUTH) * Math.cos(ISO_ELEVATION);
-  const y = distance * Math.sin(ISO_ELEVATION);
-  const z = distance * Math.cos(ISO_AZIMUTH) * Math.cos(ISO_ELEVATION);
-  cam.position.set(target.x + x, target.y + y, target.z + z);
-  cam.lookAt(target);
+if (!canvas || !section) {
+  console.warn("3D section missing — skip scene boot");
+} else {
+  boot();
 }
 
-/**
- * Keep orthographic frustum aspect-correct on resize / zoom.
- * left/right scale with aspect so objects do not stretch.
- */
-function updateOrthoFrustum() {
-  const aspect = window.innerWidth / window.innerHeight;
-  const halfH = FRUSTUM_SIZE / 2;
-  const halfW = halfH * aspect;
-  camera.left = -halfW;
-  camera.right = halfW;
-  camera.top = halfH;
-  camera.bottom = -halfH;
-  camera.updateProjectionMatrix();
-}
+function boot() {
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: false,
+    powerPreference: "high-performance",
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
 
-/* ── Lights ── */
-const ambient = new THREE.AmbientLight(0xb8c8d8, 0.45);
-scene.add(ambient);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1a222c);
+  scene.fog = new THREE.Fog(0x1a222c, 60, 120);
 
-const hemi = new THREE.HemisphereLight(0xd8e6f2, 0x3a4a3a, 0.35);
-scene.add(hemi);
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 220);
+  const lookTarget = new THREE.Vector3(0, 0.8, 0);
+  placeIsometricCamera(camera, lookTarget, CAMERA_DISTANCE);
+  camera.up.set(0, 1, 0);
+  updateOrthoFrustum();
 
-const sun = new THREE.DirectionalLight(0xfff2dd, 1.35);
-sun.position.set(18, 28, 10);
-sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
-sun.shadow.camera.near = 1;
-sun.shadow.camera.far = 80;
-sun.shadow.camera.left = -30;
-sun.shadow.camera.right = 30;
-sun.shadow.camera.top = 30;
-sun.shadow.camera.bottom = -30;
-sun.shadow.bias = -0.0008;
-sun.shadow.normalBias = 0.03;
-scene.add(sun);
+  function placeIsometricCamera(cam, target, distance) {
+    const x = distance * Math.sin(ISO_AZIMUTH) * Math.cos(ISO_ELEVATION);
+    const y = distance * Math.sin(ISO_ELEVATION);
+    const z = distance * Math.cos(ISO_AZIMUTH) * Math.cos(ISO_ELEVATION);
+    cam.position.set(target.x + x, target.y + y, target.z + z);
+    cam.lookAt(target);
+  }
 
-const fill = new THREE.DirectionalLight(0x8eb4d8, 0.35);
-fill.position.set(-12, 10, -8);
-scene.add(fill);
+  function updateOrthoFrustum() {
+    const { width, height } = getSectionSize();
+    const aspect = width / Math.max(height, 1);
+    const halfH = FRUSTUM_SIZE / 2;
+    const halfW = halfH * aspect;
+    camera.left = -halfW;
+    camera.right = halfW;
+    camera.top = halfH;
+    camera.bottom = -halfH;
+    camera.updateProjectionMatrix();
+  }
 
-/* ── Materials ── */
-const matAsphalt = new THREE.MeshStandardMaterial({
-  color: 0x3a4450,
-  roughness: 0.92,
-  metalness: 0.05,
-});
-const matConcrete = new THREE.MeshStandardMaterial({
-  color: 0x7a8694,
-  roughness: 0.88,
-  metalness: 0.08,
-});
-const matMarking = new THREE.MeshStandardMaterial({
-  color: 0xe8d48a,
-  roughness: 0.7,
-  metalness: 0.05,
-  emissive: 0x3a3010,
-  emissiveIntensity: 0.15,
-});
-const matGrass = new THREE.MeshStandardMaterial({
-  color: 0x3d5a45,
-  roughness: 1,
-  metalness: 0,
-});
-const matBuilding = new THREE.MeshStandardMaterial({
-  color: 0x5c6b7a,
-  roughness: 0.75,
-  metalness: 0.15,
-});
-const matAccent = new THREE.MeshStandardMaterial({
-  color: 0xc4860f,
-  roughness: 0.55,
-  metalness: 0.2,
-});
-const matGlassTint = new THREE.MeshStandardMaterial({
-  color: 0x1a3040,
-  roughness: 0.25,
-  metalness: 0.4,
-  transparent: true,
-  opacity: 0.75,
-});
+  function getSectionSize() {
+    const rect = section.getBoundingClientRect();
+    return {
+      width: Math.max(1, Math.floor(rect.width || window.innerWidth)),
+      height: Math.max(1, Math.floor(rect.height || window.innerHeight)),
+    };
+  }
 
-/* ── Environment: parking / drop-off zone ── */
-const environment = new THREE.Group();
-environment.name = "Environment";
-scene.add(environment);
+  function resizeRenderer() {
+    const { width, height } = getSectionSize();
+    renderer.setSize(width, height, false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    updateOrthoFrustum();
+  }
 
-function addBox(parent, w, h, d, mat, x, y, z, cast = true, receive = true) {
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-  mesh.position.set(x, y, z);
-  mesh.castShadow = cast;
-  mesh.receiveShadow = receive;
-  parent.add(mesh);
-  return mesh;
-}
+  /* Lights */
+  scene.add(new THREE.AmbientLight(0xb8c8d8, 0.42));
+  scene.add(new THREE.HemisphereLight(0xd8e6f2, 0x3a4a3a, 0.32));
 
-// Ground pad
-const ground = new THREE.Mesh(new THREE.BoxGeometry(48, 0.4, 36), matAsphalt);
-ground.position.set(0, -0.2, 0);
-ground.receiveShadow = true;
-environment.add(ground);
+  const sun = new THREE.DirectionalLight(0xfff2dd, 1.3);
+  sun.position.set(20, 30, 12);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.near = 2;
+  sun.shadow.camera.far = 90;
+  sun.shadow.camera.left = -35;
+  sun.shadow.camera.right = 35;
+  sun.shadow.camera.top = 35;
+  sun.shadow.camera.bottom = -35;
+  sun.shadow.bias = -0.0008;
+  sun.shadow.normalBias = 0.03;
+  scene.add(sun);
 
-// Grass strips
-addBox(environment, 48, 0.15, 4, matGrass, 0, 0.05, -16, false, true);
-addBox(environment, 48, 0.15, 3, matGrass, 0, 0.05, 16.5, false, true);
+  const fill = new THREE.DirectionalLight(0x8eb4d8, 0.28);
+  fill.position.set(-14, 12, -10);
+  scene.add(fill);
 
-// Concrete walkway / curb
-addBox(environment, 40, 0.25, 3.2, matConcrete, 0, 0.15, -6, true, true);
-
-// Parking bay lines (stylized)
-for (let i = -2; i <= 2; i++) {
-  addBox(environment, 0.12, 0.04, 5.5, matMarking, i * 4.2, 0.03, 2, false, true);
-}
-addBox(environment, 18, 0.04, 0.14, matMarking, 0, 0.03, -0.6, false, true);
-addBox(environment, 18, 0.04, 0.14, matMarking, 0, 0.03, 4.8, false, true);
-
-// Factory building (simplified massing)
-const factory = new THREE.Group();
-factory.position.set(-14, 0, -8);
-environment.add(factory);
-addBox(factory, 14, 8, 10, matBuilding, 0, 4, 0);
-addBox(factory, 14.2, 0.4, 10.2, matAccent, 0, 8.2, 0);
-addBox(factory, 4, 3.5, 0.3, matGlassTint, -3, 3.5, 5.15, false, true);
-addBox(factory, 4, 3.5, 0.3, matGlassTint, 3, 3.5, 5.15, false, true);
-addBox(factory, 3, 4, 2, matBuilding, 8.5, 2, 2);
-
-// Loading canopy
-const canopy = new THREE.Group();
-canopy.position.set(6, 0, -7);
-environment.add(canopy);
-addBox(canopy, 0.35, 4.5, 0.35, matConcrete, -5, 2.25, -2);
-addBox(canopy, 0.35, 4.5, 0.35, matConcrete, 5, 2.25, -2);
-addBox(canopy, 0.35, 4.5, 0.35, matConcrete, -5, 2.25, 2);
-addBox(canopy, 0.35, 4.5, 0.35, matConcrete, 5, 2.25, 2);
-addBox(canopy, 11, 0.25, 5, matAccent, 0, 4.6, 0);
-
-// Bollards / posts
-for (let i = 0; i < 5; i++) {
-  addBox(environment, 0.25, 1.1, 0.25, matAccent, -6 + i * 1.4, 0.55, -4.2);
-}
-
-// Subtle road beyond lot
-addBox(environment, 60, 0.12, 8, matAsphalt, 0, -0.05, 12, false, true);
-
-/* ── Commuter van (procedural) ── */
-const vanGroup = new THREE.Group();
-vanGroup.name = "CommuterVan";
-vanGroup.position.set(2.5, 0, 1.8);
-vanGroup.rotation.y = -Math.PI / 2.4;
-scene.add(vanGroup);
-
-const vanMats = {
-  body: new THREE.MeshStandardMaterial({
-    color: 0xe8a317,
-    roughness: 0.42,
-    metalness: 0.25,
-    emissive: new THREE.Color(0xe8a317),
-    emissiveIntensity: 0,
-  }),
-  bodyDark: new THREE.MeshStandardMaterial({
-    color: 0x2a323c,
-    roughness: 0.5,
-    metalness: 0.3,
-  }),
-  window: new THREE.MeshStandardMaterial({
-    color: 0x152530,
-    roughness: 0.2,
-    metalness: 0.55,
-    transparent: true,
-    opacity: 0.85,
-  }),
-  tire: new THREE.MeshStandardMaterial({
-    color: 0x1a1a1a,
-    roughness: 0.95,
+  /* Materials */
+  const matAsphalt = new THREE.MeshStandardMaterial({
+    color: 0x3a4450,
+    roughness: 0.92,
     metalness: 0.05,
-  }),
-  rim: new THREE.MeshStandardMaterial({
-    color: 0xc8d0d8,
-    roughness: 0.35,
-    metalness: 0.7,
-  }),
-  highlight: new THREE.MeshStandardMaterial({
-    color: 0xffc94a,
-    roughness: 0.35,
+  });
+  const matMarking = new THREE.MeshStandardMaterial({
+    color: 0xe8d48a,
+    roughness: 0.7,
+    metalness: 0.05,
+    emissive: 0x3a3010,
+    emissiveIntensity: 0.12,
+  });
+  const matGrass = new THREE.MeshStandardMaterial({
+    color: 0x3d5a45,
+    roughness: 1,
+  });
+  const matBuilding = new THREE.MeshStandardMaterial({
+    color: 0x5c6b7a,
+    roughness: 0.75,
+    metalness: 0.15,
+  });
+  const matAccent = new THREE.MeshStandardMaterial({
+    color: 0x9aa3ad,
+    roughness: 0.55,
     metalness: 0.2,
-    emissive: 0xe8a317,
-    emissiveIntensity: 0.35,
-  }),
-};
+  });
+  const matSidewalk = new THREE.MeshStandardMaterial({
+    color: 0x6e7884,
+    roughness: 0.88,
+  });
 
-function buildProceduralVan(parent) {
-  // Chassis / cabin body
-  const body = addBox(parent, 2.4, 1.55, 5.6, vanMats.body, 0, 1.15, 0);
-  body.name = "van-body";
+  function addBox(parent, w, h, d, mat, x, y, z, cast = true, receive = true) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+    mesh.position.set(x, y, z);
+    mesh.castShadow = cast;
+    mesh.receiveShadow = receive;
+    parent.add(mesh);
+    return mesh;
+  }
 
-  // Roof
-  addBox(parent, 2.2, 0.2, 5.2, vanMats.bodyDark, 0, 2.0, 0);
+  /* ── 4-way intersection environment ── */
+  const world = new THREE.Group();
+  scene.add(world);
 
-  // Cabin front (slightly raised)
-  addBox(parent, 2.35, 1.1, 1.4, vanMats.body, 0, 1.55, 2.35);
+  // Grass base
+  const ground = new THREE.Mesh(new THREE.BoxGeometry(56, 0.35, 56), matGrass);
+  ground.position.y = -0.2;
+  ground.receiveShadow = true;
+  world.add(ground);
 
-  // Windshield
-  const windshield = addBox(parent, 2.0, 0.85, 0.12, vanMats.window, 0, 1.7, 3.05, false);
-  windshield.rotation.x = -0.18;
+  // Roads: + / cross
+  addBox(world, ROAD_LEN * 2, 0.18, ROAD_HALF * 2, matAsphalt, 0, 0.02, 0, false, true);
+  addBox(world, ROAD_HALF * 2, 0.18, ROAD_LEN * 2, matAsphalt, 0, 0.025, 0, false, true);
 
-  // Side windows
-  addBox(parent, 0.08, 0.7, 3.6, vanMats.window, 1.22, 1.45, -0.2, false);
-  addBox(parent, 0.08, 0.7, 3.6, vanMats.window, -1.22, 1.45, -0.2, false);
+  // Center dashed markings (horizontal)
+  for (let i = -8; i <= 8; i++) {
+    if (Math.abs(i) < 1.2) continue;
+    addBox(world, 1.1, 0.04, 0.14, matMarking, i * 2.4, 0.12, 0, false, true);
+  }
+  // Center dashed markings (vertical)
+  for (let i = -8; i <= 8; i++) {
+    if (Math.abs(i) < 1.2) continue;
+    addBox(world, 0.14, 0.04, 1.1, matMarking, 0, 0.12, i * 2.4, false, true);
+  }
 
-  // Bumper
-  addBox(parent, 2.3, 0.28, 0.35, vanMats.bodyDark, 0, 0.45, 2.95);
+  // Stop lines near intersection
+  addBox(world, 0.18, 0.05, ROAD_HALF * 1.6, matMarking, ROAD_HALF + 0.6, 0.13, 0, false, true);
+  addBox(world, 0.18, 0.05, ROAD_HALF * 1.6, matMarking, -(ROAD_HALF + 0.6), 0.13, 0, false, true);
+  addBox(world, ROAD_HALF * 1.6, 0.05, 0.18, matMarking, 0, 0.13, ROAD_HALF + 0.6, false, true);
+  addBox(world, ROAD_HALF * 1.6, 0.05, 0.18, matMarking, 0, 0.13, -(ROAD_HALF + 0.6), false, true);
 
-  // Headlights
-  addBox(parent, 0.35, 0.22, 0.12, vanMats.highlight, 0.75, 0.7, 3.1, false);
-  addBox(parent, 0.35, 0.22, 0.12, vanMats.highlight, -0.75, 0.7, 3.1, false);
-
-  // Rear lights
-  addBox(parent, 0.4, 0.2, 0.1, vanMats.bodyDark, 0.8, 1.0, -2.82, false);
-  addBox(parent, 0.4, 0.2, 0.1, vanMats.bodyDark, -0.8, 1.0, -2.82, false);
-
-  // Wheels
-  const wheelGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.32, 20);
-  const rimGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.34, 16);
-  const wheelPositions = [
-    [1.15, 0.42, 1.7],
-    [-1.15, 0.42, 1.7],
-    [1.15, 0.42, -1.7],
-    [-1.15, 0.42, -1.7],
+  // Corner sidewalks / pads
+  const pad = ROAD_HALF + 2.2;
+  const corners = [
+    [pad, pad],
+    [pad, -pad],
+    [-pad, pad],
+    [-pad, -pad],
   ];
-  for (const [wx, wy, wz] of wheelPositions) {
-    const tire = new THREE.Mesh(wheelGeo, vanMats.tire);
-    tire.rotation.z = Math.PI / 2;
-    tire.position.set(wx, wy, wz);
-    tire.castShadow = true;
-    parent.add(tire);
-
-    const rim = new THREE.Mesh(rimGeo, vanMats.rim);
-    rim.rotation.z = Math.PI / 2;
-    rim.position.set(wx, wy, wz);
-    parent.add(rim);
+  for (const [cx, cz] of corners) {
+    addBox(world, 5.5, 0.22, 5.5, matSidewalk, cx, 0.08, cz, true, true);
   }
 
-  // Invisible hit volume for reliable raycasting
-  const hit = new THREE.Mesh(
-    new THREE.BoxGeometry(2.6, 2.2, 5.9),
-    new THREE.MeshBasicMaterial({ visible: false })
-  );
-  hit.position.set(0, 1.15, 0);
-  hit.name = "van-hitbox";
-  parent.add(hit);
-
-  return parent;
-}
-
-/**
- * Prefer .gltf when VAN_GLTF_URL is set; otherwise procedural placeholder.
- */
-async function loadVan() {
-  if (!VAN_GLTF_URL) {
-    buildProceduralVan(vanGroup);
-    return;
+  // Corner buildings (factory / dorm blocks)
+  const buildings = [
+    { x: 11, z: 11, w: 8, h: 6, d: 7, color: 0x5c6b7a },
+    { x: -11, z: 11, w: 7, h: 5, d: 8, color: 0x4f5d6a },
+    { x: 11, z: -11, w: 9, h: 7, d: 6, color: 0x667788 },
+    { x: -12, z: -11, w: 8, h: 4.5, d: 7, color: 0x556676 },
+  ];
+  for (const b of buildings) {
+    const mat = matBuilding.clone();
+    mat.color = new THREE.Color(b.color);
+    addBox(world, b.w, b.h, b.d, mat, b.x, b.h / 2, b.z);
+    addBox(world, b.w + 0.2, 0.3, b.d + 0.2, matAccent, b.x, b.h + 0.1, b.z);
   }
 
-  try {
-    const gltf = await new GLTFLoader().loadAsync(VAN_GLTF_URL);
-    const model = gltf.scene;
-    model.traverse((obj) => {
-      if (obj.isMesh) {
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-      }
+  // Street lamps
+  for (const [lx, lz] of [
+    [5.5, 5.5],
+    [5.5, -5.5],
+    [-5.5, 5.5],
+    [-5.5, -5.5],
+  ]) {
+    addBox(world, 0.18, 3.2, 0.18, matAccent, lx, 1.6, lz);
+    const lamp = addBox(world, 0.5, 0.15, 0.5, matMarking, lx, 3.3, lz, false);
+    lamp.material = matMarking.clone();
+    lamp.material.emissiveIntensity = 0.45;
+  }
+
+  /* ── Procedural van builder ── */
+  function createVan(colorHex) {
+    const group = new THREE.Group();
+    group.name = "CommuterVan";
+
+    const bodyMat = new THREE.MeshStandardMaterial({
+      color: colorHex,
+      roughness: 0.42,
+      metalness: 0.25,
+      emissive: new THREE.Color(colorHex),
+      emissiveIntensity: 0,
     });
-    // Normalize scale/position for this lot size
-    model.scale.setScalar(1);
-    model.position.set(0, 0, 0);
-    vanGroup.add(model);
+    const darkMat = new THREE.MeshStandardMaterial({
+      color: 0x2a323c,
+      roughness: 0.5,
+      metalness: 0.3,
+    });
+    const windowMat = new THREE.MeshStandardMaterial({
+      color: 0x152530,
+      roughness: 0.2,
+      metalness: 0.55,
+      transparent: true,
+      opacity: 0.85,
+    });
+    const tireMat = new THREE.MeshStandardMaterial({
+      color: 0x1a1a1a,
+      roughness: 0.95,
+    });
+    const rimMat = new THREE.MeshStandardMaterial({
+      color: 0xc8d0d8,
+      roughness: 0.35,
+      metalness: 0.7,
+    });
+    const lightMat = new THREE.MeshStandardMaterial({
+      color: 0xffc94a,
+      emissive: 0xe8a317,
+      emissiveIntensity: 0.4,
+      roughness: 0.35,
+    });
+
+    addBox(group, 2.2, 1.45, 5.2, bodyMat, 0, 1.1, 0);
+    addBox(group, 2.0, 0.18, 4.8, darkMat, 0, 1.9, 0);
+    addBox(group, 2.15, 1.0, 1.3, bodyMat, 0, 1.45, 2.15);
+    const windshield = addBox(group, 1.85, 0.75, 0.1, windowMat, 0, 1.6, 2.82, false);
+    windshield.rotation.x = -0.18;
+    addBox(group, 0.08, 0.65, 3.3, windowMat, 1.12, 1.35, -0.15, false);
+    addBox(group, 0.08, 0.65, 3.3, windowMat, -1.12, 1.35, -0.15, false);
+    addBox(group, 2.1, 0.25, 0.3, darkMat, 0, 0.42, 2.7);
+    addBox(group, 0.32, 0.18, 0.1, lightMat, 0.7, 0.65, 2.85, false);
+    addBox(group, 0.32, 0.18, 0.1, lightMat, -0.7, 0.65, 2.85, false);
+
+    const wheelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.28, 16);
+    const rimGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.3, 12);
+    for (const [wx, wy, wz] of [
+      [1.05, 0.38, 1.55],
+      [-1.05, 0.38, 1.55],
+      [1.05, 0.38, -1.55],
+      [-1.05, 0.38, -1.55],
+    ]) {
+      const tire = new THREE.Mesh(wheelGeo, tireMat);
+      tire.rotation.z = Math.PI / 2;
+      tire.position.set(wx, wy, wz);
+      tire.castShadow = true;
+      group.add(tire);
+      const rim = new THREE.Mesh(rimGeo, rimMat);
+      rim.rotation.z = Math.PI / 2;
+      rim.position.set(wx, wy, wz);
+      group.add(rim);
+    }
 
     const hit = new THREE.Mesh(
-      new THREE.BoxGeometry(2.6, 2.2, 5.9),
+      new THREE.BoxGeometry(2.4, 2.0, 5.5),
       new THREE.MeshBasicMaterial({ visible: false })
     );
-    hit.position.set(0, 1.15, 0);
+    hit.position.set(0, 1.05, 0);
     hit.name = "van-hitbox";
-    vanGroup.add(hit);
-  } catch (err) {
-    console.warn("GLTF load failed — falling back to procedural van.", err);
-    buildProceduralVan(vanGroup);
-  }
-}
+    group.add(hit);
 
-/* ── OrbitControls (restricted isometric feel) ── */
-const controls = new OrbitControls(camera, canvas);
-controls.target.set(0, 1.2, 0);
-controls.enableDamping = true;
-controls.dampingFactor = 0.08;
-controls.enablePan = false;
-
-// Restrict polar angle near isometric elevation so the view stays "iso-ish"
-const isoPolar = Math.PI / 2 - ISO_ELEVATION;
-controls.minPolarAngle = isoPolar - 0.12;
-controls.maxPolarAngle = isoPolar + 0.12;
-
-// Limit yaw so you cannot spin into a side/top orthographic view
-controls.minAzimuthAngle = ISO_AZIMUTH - 0.45;
-controls.maxAzimuthAngle = ISO_AZIMUTH + 0.45;
-
-controls.minZoom = 0.65;
-controls.maxZoom = 1.85;
-controls.zoomSpeed = 0.6;
-controls.update();
-
-/* ── Raycaster interaction ── */
-const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
-let hovered = false;
-let cardOpen = false;
-
-function setPointerFromEvent(event) {
-  const rect = canvas.getBoundingClientRect();
-  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-}
-
-function pickVan() {
-  raycaster.setFromCamera(pointer, camera);
-  const hits = raycaster.intersectObject(vanGroup, true);
-  return hits.length > 0;
-}
-
-function setVanHighlight(on) {
-  hovered = on;
-  canvas.classList.toggle("is-hover-van", on);
-  const target = on || cardOpen ? 0.55 : 0;
-  vanMats.highlight.emissiveIntensity = on || cardOpen ? 0.55 : 0.35;
-  vanMats.body.emissiveIntensity = THREE.MathUtils.lerp(
-    vanMats.body.emissiveIntensity,
-    target,
-    0.35
-  );
-}
-
-function populateCard() {
-  document.getElementById("card-route").textContent = VAN_DATA.route;
-  document.getElementById("card-shift").textContent = VAN_DATA.shift;
-  document.getElementById("card-driver").textContent = VAN_DATA.driver;
-  document.getElementById("card-seats").textContent = VAN_DATA.seats;
-  document.getElementById("card-plate").textContent = VAN_DATA.plate;
-  document.getElementById("card-status").textContent = VAN_DATA.status;
-}
-
-function openCard() {
-  populateCard();
-  cardOpen = true;
-  vanCard.hidden = false;
-  // Retrigger CSS animation
-  vanCard.style.animation = "none";
-  void vanCard.offsetWidth;
-  vanCard.style.animation = "";
-  setVanHighlight(true);
-}
-
-function closeCard() {
-  cardOpen = false;
-  vanCard.hidden = true;
-  setVanHighlight(hovered);
-}
-
-canvas.addEventListener("pointermove", (e) => {
-  setPointerFromEvent(e);
-  const over = pickVan();
-  if (over !== hovered) setVanHighlight(over);
-});
-
-canvas.addEventListener("pointerdown", (e) => {
-  setPointerFromEvent(e);
-  if (pickVan()) {
-    openCard();
-  }
-});
-
-cardClose.addEventListener("click", closeCard);
-
-btnFocusVan.addEventListener("click", () => {
-  openCard();
-  // Ease controls target toward van
-  controls.target.set(vanGroup.position.x, 1.2, vanGroup.position.z);
-});
-
-btnBook.addEventListener("click", () => {
-  btnBook.textContent = "ส่งคำขอจองแล้ว ✓";
-  btnBook.disabled = true;
-});
-
-/* ── Resize ── */
-function onResize() {
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  updateOrthoFrustum();
-}
-window.addEventListener("resize", onResize);
-
-/* ── Idle van bob (subtle presence motion) ── */
-const clock = new THREE.Clock();
-
-function animate() {
-  requestAnimationFrame(animate);
-  const t = clock.getElapsedTime();
-
-  // Gentle hover / settle motion on the van
-  vanGroup.position.y = Math.sin(t * 1.4) * 0.03;
-
-  // Soft emissive breathe when selected
-  if (cardOpen) {
-    vanMats.body.emissiveIntensity = 0.25 + Math.sin(t * 2.2) * 0.12;
-  } else if (hovered) {
-    vanMats.body.emissiveIntensity = THREE.MathUtils.lerp(
-      vanMats.body.emissiveIntensity,
-      0.45,
-      0.1
-    );
-  } else {
-    vanMats.body.emissiveIntensity = THREE.MathUtils.lerp(
-      vanMats.body.emissiveIntensity,
-      0,
-      0.08
-    );
+    group.userData.bodyMat = bodyMat;
+    return group;
   }
 
+  /* Spawn fleet on routes */
+  const vans = FLEET.map((cfg) => {
+    const mesh = createVan(cfg.color);
+    mesh.userData.fleet = cfg;
+    mesh.userData.t = cfg.phase;
+    scene.add(mesh);
+    return mesh;
+  });
+
+  function updateVanOnPath(mesh, dt) {
+    const cfg = mesh.userData.fleet;
+    const [a, b] = cfg.path;
+    mesh.userData.t = (mesh.userData.t + dt * cfg.speed) % 1;
+    const t = mesh.userData.t;
+    mesh.position.lerpVectors(a, b, t);
+    mesh.position.y = 0;
+
+    // Face travel direction
+    const dir = new THREE.Vector3().subVectors(b, a).normalize();
+    const yaw = Math.atan2(dir.x, dir.z);
+    mesh.rotation.y = yaw;
+  }
+
+  /* OrbitControls — keep isometric feel */
+  const controls = new OrbitControls(camera, canvas);
+  controls.target.copy(lookTarget);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.enablePan = false;
+  const isoPolar = Math.PI / 2 - ISO_ELEVATION;
+  controls.minPolarAngle = isoPolar - 0.1;
+  controls.maxPolarAngle = isoPolar + 0.1;
+  controls.minAzimuthAngle = ISO_AZIMUTH - 0.4;
+  controls.maxAzimuthAngle = ISO_AZIMUTH + 0.4;
+  controls.minZoom = 0.7;
+  controls.maxZoom = 1.7;
+  controls.zoomSpeed = 0.55;
   controls.update();
+
+  /* Raycaster */
+  const raycaster = new THREE.Raycaster();
+  const pointer = new THREE.Vector2();
+  let hovered = null;
+  let selected = null;
+  let cardOpen = false;
+  let sectionVisible = false;
+
+  function setPointerFromEvent(event) {
+    const rect = canvas.getBoundingClientRect();
+    pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  }
+
+  function pickVan() {
+    raycaster.setFromCamera(pointer, camera);
+    const hits = raycaster.intersectObjects(vans, true);
+    if (!hits.length) return null;
+    let obj = hits[0].object;
+    while (obj && !obj.userData.fleet) obj = obj.parent;
+    return obj;
+  }
+
+  function setHighlight(van, on) {
+    if (!van?.userData.bodyMat) return;
+    van.userData.bodyMat.emissiveIntensity = on ? 0.45 : 0;
+  }
+
+  function populateCard(data) {
+    document.getElementById("card-route").textContent = data.route;
+    document.getElementById("card-shift").textContent = data.shift;
+    document.getElementById("card-driver").textContent = data.driver;
+    document.getElementById("card-seats").textContent = data.seats;
+    document.getElementById("card-plate").textContent = data.plate;
+    document.getElementById("card-status").textContent = data.status;
+  }
+
+  function openCard(van) {
+    if (selected && selected !== van) setHighlight(selected, false);
+    selected = van;
+    cardOpen = true;
+    populateCard(van.userData.fleet);
+    vanCard.hidden = false;
+    vanCard.style.animation = "none";
+    void vanCard.offsetWidth;
+    vanCard.style.animation = "";
+    setHighlight(van, true);
+    btnBook.disabled = false;
+    btnBook.textContent = "จองที่นั่งในสายนี้";
+  }
+
+  function closeCard() {
+    cardOpen = false;
+    vanCard.hidden = true;
+    if (selected) setHighlight(selected, hovered === selected);
+    selected = null;
+  }
+
+  canvas.addEventListener("pointermove", (e) => {
+    if (!sectionVisible) return;
+    setPointerFromEvent(e);
+    const van = pickVan();
+    canvas.classList.toggle("is-hover-van", !!van);
+    if (van !== hovered) {
+      if (hovered && hovered !== selected) setHighlight(hovered, false);
+      hovered = van;
+      if (hovered) setHighlight(hovered, true);
+    }
+  });
+
+  canvas.addEventListener("pointerdown", (e) => {
+    if (!sectionVisible) return;
+    setPointerFromEvent(e);
+    const van = pickVan();
+    if (van) openCard(van);
+  });
+
+  cardClose?.addEventListener("click", closeCard);
+  btnBook?.addEventListener("click", () => {
+    btnBook.textContent = "ส่งคำขอจองแล้ว ✓";
+    btnBook.disabled = true;
+  });
+
+  /* Resize */
+  const ro = new ResizeObserver(() => resizeRenderer());
+  ro.observe(section);
+  window.addEventListener("resize", resizeRenderer);
+  resizeRenderer();
+
+  /* Only animate when section is on screen */
+  const io = new IntersectionObserver(
+    ([entry]) => {
+      sectionVisible = entry.isIntersecting && entry.intersectionRatio > 0.15;
+    },
+    { threshold: [0, 0.15, 0.4] }
+  );
+  io.observe(section);
+
+  const clock = new THREE.Clock();
+  let raf = 0;
+
+  function animate() {
+    raf = requestAnimationFrame(animate);
+    const dt = Math.min(clock.getDelta(), 0.05);
+
+    if (sectionVisible) {
+      for (const van of vans) updateVanOnPath(van, dt);
+      if (selected?.userData.bodyMat) {
+        selected.userData.bodyMat.emissiveIntensity =
+          0.28 + Math.sin(clock.elapsedTime * 2.4) * 0.12;
+      }
+      controls.update();
+      renderer.render(scene, camera);
+    }
+  }
+
+  loaderEl?.classList.add("is-done");
+  // Seed initial positions
+  for (const van of vans) updateVanOnPath(van, 0);
+  animate();
+
+  // First paint once sized
   renderer.render(scene, camera);
 }
-
-/* ── Boot ── */
-await loadVan();
-loaderEl.classList.add("is-done");
-animate();
